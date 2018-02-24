@@ -5,6 +5,7 @@
 
 int main(int argc, char const *argv[]) {
     clock_t startTime, endTime, totalTime;
+    int myRank, commSize;
 
     MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
@@ -14,7 +15,7 @@ int main(int argc, char const *argv[]) {
     // char label[100] = "Hi I'm the processor ";
 
     int receiver = (commSize / 2) + (myRank % 2 == 0 ? myRank : -myRank);
-
+	printf("My Rank =>\t%d\nReceiver =>\t%d\n", myRank, receiver);
     startTime = clock();
     MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
     
