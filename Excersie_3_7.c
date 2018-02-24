@@ -14,8 +14,9 @@ int main(int argc, char const *argv[]) {
     int count = 0;
     // char label[100] = "Hi I'm the processor ";
 
-    int receiver = (commSize / 2) + (myRank % 2 == 0 ? myRank : -myRank);
+    int receiver = myRank + (myRank % 2 == 0 ? 1 : -1);
 	printf("My Rank =>\t%d\nReceiver =>\t%d\n", myRank, receiver);
+
     startTime = clock();
     MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
     
