@@ -4,7 +4,7 @@
 #include <mpi.h>
 
 int main(int argc, char const *argv[]) {
-    clock_t startTime, endTime, totalTime;
+    double startTime, endTime, totalTime;
     int myRank, commSize;
 
     MPI_Init(NULL, NULL);
@@ -17,13 +17,13 @@ int main(int argc, char const *argv[]) {
     int receiver = myRank + (myRank % 2 == 0 ? 1 : -1);
 	printf("My Rank =>\t%d\nReceiver =>\t%d\n", myRank, receiver);
 
-    startTime = clock();
+    startTime = MPI_Wtime();
     MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
     
     MPI_Recv(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    endTime = clock();
+    endTime = MPI_Wtime();
 
-    totalTime = (double) (endTime - startTime) / CLOCKS_PER_SEC;
+    totalTime = (double) (endTime - startTime);
 
     printf("Total Time => \t%f\n", totalTime);
 
