@@ -1,5 +1,6 @@
 #include <time.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <mpi.h>
 
@@ -8,13 +9,13 @@ int main(int argc, char const *argv[]) {
     clock_t startTimeClock, endTimeClock;
     int myRank, commSize;
     int dummyIterations = 1000000;
-    
-    int type = argc == 1 ? 1 : 0;
+printf("%d\n", argc);    
+    int type = argc >= 2 ? atoi(argv[1]) : 1;
     printf("The time will be calculated using %s\n", type == 1 ? "MPI_Wtime" : "CLOCK C");
 
     if (type == 0) {
         if (argc == 3) {
-            dummyIterations = argv[2];
+            dummyIterations = atoi(argv[2]);
         }
 
         printf("The program will be executed %d times a dummy line\n", dummyIterations);
@@ -33,17 +34,17 @@ int main(int argc, char const *argv[]) {
                         
                 MPI_Recv(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 endTime = MPI_Wtime();
-                
+		totalTime = endTime - startTime;                
             } else {
-                startTimeClock = MPI_Wtime();
+                startTimeClock = clock();
                 for (int i = 0; i < dummyIterations; ++i) {
                     //DUMMY LINE
                 }
                 MPI_Send(&startTimeClock, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
                 
                 MPI_Recv(&startTimeClock, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                endTimeClock = MPI_Wtime();
-                totalTime = ((double) (endTimeClock - startTimeClock)) / CLOCKS_PER_SEC;
+                endTimeClock = clock();
+                totalTime = difftime(endTimeClock, startTimeClock) / CLOCKS_PER_SEC;
             }
 
             MPI_Send(&totalTime, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
