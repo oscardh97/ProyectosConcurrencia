@@ -1,0 +1,2 @@
+﻿Compilación:		mpicc –g –Wall –o <nombre ejecutable> <nombre archivo>
+Ejecución:		mpiexec –n <procesos> ./<nombre ejecutable> <tipo ejecución> <número de repeticiones for>
