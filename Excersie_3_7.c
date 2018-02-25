@@ -12,7 +12,7 @@ int main(int argc, char const *argv[]) {
         MPI_Comm_size(MPI_COMM_WORLD, &commSize);
 
         if (myRank != 0) {
-            int receiver = myRank + (myRank % 2 == 0 ? 1 : -1);
+            int receiver = myRank + (myRank % 2 == 0 ? -1 : 1);
 
             startTime = MPI_Wtime();
             MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
@@ -28,16 +28,15 @@ int main(int argc, char const *argv[]) {
             double endTimeA = 0;
             double endTimeB = 0;
             int A, B;
-            for (A = 1; A <= (commSize / 2); A++) {
-                B = (int)(A + (commSize / 2));
+            for (A = 1, B = 2; A < commSize - 1; A += 2, B += 2) {
                 MPI_Recv(&endTimeA, 1, MPI_DOUBLE, A, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 MPI_Recv(&endTimeB, 1, MPI_DOUBLE, B, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
                 totalTime = endTimeA + endTimeB;
-                printf("Ping From =>\t%d\tTo =>\t%d\tTime =>\t%f\n", A, B, totalTimeA);
-                printf("Pong From =>\t%d\tTo =>\t%d\tTime =>\t%f\n", B, A, totalTimeB);
-                printf("Total Time =>\t%d\n", totalTime);
-                printf("-------------------------------------------------------------");
+                printf("Ping From =>\t%d\tTo =>\t%d\tTime =>\t%f\n", A, B, endTimeA);
+                printf("Pong From =>\t%d\tTo =>\t%d\tTime =>\t%f\n", B, A, endTimeB);
+                printf("Total Time =>\t%f\n", totalTime);
+                printf("-------------------------------------------------------------\n");
             }
         }
     
