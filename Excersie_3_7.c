@@ -12,10 +12,8 @@ int main(int argc, char const *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &commSize);
     double average = 0;
     int count = 0;
-    // char label[100] = "Hi I'm the processor ";
 
     int receiver = myRank + (myRank % 2 == 0 ? 1 : -1);
-	printf("My Rank =>\t%d\nReceiver =>\t%d\n", myRank, receiver);
 
     startTime = MPI_Wtime();
     MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
@@ -25,15 +23,10 @@ int main(int argc, char const *argv[]) {
 
     totalTime = (double) (endTime - startTime);
 
-    printf("Total Time => \t%f\n", totalTime);
-
-    // if (myRank != 0) {
-    // 	count++;
-    //     MPI_Send(count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    // } else {
-    //     for (int source = 1; source < commSize; source++) {
-    //         MPI_Recv(count, 1, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //     }
+	printf("From =>\t%d\tTo =>\t%d\nTime(%d,%d) =>\t%d", myRank, receiver, totalTime,myRank,receiver);
+    
+    // for (int source = 0; source < commSize; source++) {
+    //     MPI_Recv(count, 1, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     // }
 
     MPI_Finalize();
