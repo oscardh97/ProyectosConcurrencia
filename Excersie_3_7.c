@@ -5,10 +5,19 @@
 
 int main(int argc, char const *argv[]) {
     double startTime, endTime, totalTime;
+    clock_t startTimeClock, endTimeClock;
     int myRank, commSize;
+    int dummyIterations = 1000000;
     
-    for(int i=0; i < argc; ++i){   
-        printf("Argument %d : %s\n", i, argv[i]);
+    int type = argc == 1 ? 1 : 0;
+    printf("The time will be calculated using %s\n", type == 1 ? "MPI_Wtime" : "CLOCK C");
+
+    if (type == 0) {
+        if (argc == 3) {
+            dummyIterations = argv[2];
+        }
+
+        printf("The program will be executed %d times a dummy line\n", dummyIterations);
     }
 
     MPI_Init(NULL, NULL);
@@ -18,12 +27,24 @@ int main(int argc, char const *argv[]) {
         if (myRank != 0) {
             int receiver = myRank + (myRank % 2 == 0 ? -1 : 1);
 
-            startTime = MPI_Wtime();
-            MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
-                    
-            MPI_Recv(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            endTime = MPI_Wtime();
-            totalTime = (double) (endTime - startTime);
+            if (type == 1) {
+                startTime = MPI_Wtime();
+                MPI_Send(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
+                        
+                MPI_Recv(&startTime, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                endTime = MPI_Wtime();
+                
+            } else {
+                startTimeClock = MPI_Wtime();
+                for (int i = 0; i < dummyIterations; ++i) {
+                    //DUMMY LINE
+                }
+                MPI_Send(&startTimeClock, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD);
+                
+                MPI_Recv(&startTimeClock, 1, MPI_DOUBLE, receiver, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                endTimeClock = MPI_Wtime();
+                totalTime = ((double) (endTimeClock - startTimeClock)) / CLOCKS_PER_SEC;
+            }
 
             MPI_Send(&totalTime, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
 
@@ -48,7 +69,7 @@ int main(int argc, char const *argv[]) {
             }
             
             average /= (commSize/ 2);
-            printf("Ping-Pong Average =>%f\t", average);
+            printf("Ping-Pong Average =>%f\n", average);
         }
     
     MPI_Finalize();
