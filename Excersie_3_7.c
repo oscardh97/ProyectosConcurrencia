@@ -23,7 +23,7 @@ int main(int argc, char const *argv[]) {
 
     totalTime = (double) (endTime - startTime);
 
-	printf("From =>\t%d\tTo =>\t%d\nTime(%d,%d) =>\t%d", myRank, receiver, totalTime,myRank,receiver);
+	printf("From =>\t%d\tTo =>\t%d\tTime =>\t%f\n", myRank, receiver, totalTime);
     
     // for (int source = 0; source < commSize; source++) {
     //     MPI_Recv(count, 1, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
