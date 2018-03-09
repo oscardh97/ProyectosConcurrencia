@@ -38,9 +38,10 @@ void *getLocalInt(void *rank) {
     rightEndpt = leftEndpt + localN * h;
 
     estimate = Trap(leftEndpt, rightEndpt, localN, h);
-    while (flag == ((int)rank));
+//    printf("@flag%d\n", flag);
+    while (flag != ((int)my_rank));
     total += estimate;
-
+    flag++;
     return NULL;
 }
 
@@ -58,7 +59,7 @@ int main(int argc, char **argv) {
     localN = n / threadCount;
 
     master_thread = malloc(threadCount * sizeof(pthread_t));
-
+//    printf("@threadCount %d\n", threadCount);
     for (long i = 0; i < threadCount; i++) {
         pthread_create(&master_thread[i], NULL, getLocalInt, (void *)i);
     }
