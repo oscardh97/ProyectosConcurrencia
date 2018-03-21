@@ -1,7 +1,7 @@
 Compile: hadoop com.sun.tools.javac.Main WordCount2.java
 Generate Jar: jar cf wc.jar WordCount2*.class
 Execute: hadoop jar wc.jar WordCount2 /input /output
+Execute: hadoop jar wc.jar WordCount2 /user/admin/input /user/admin/output
 
 
-hadoop fs -mkdir /input
-hadoop fs -put ./input/entrada.txt /input/entrada.txt
+hadoop fs -mkdir /input & hadoop fs -put ./input/entrada.txt /input/entrada.txt
